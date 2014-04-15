@@ -1,1 +1,0 @@
-unsigned char* p = &data.u8TempImage[GRAYSCALE][r+c];
