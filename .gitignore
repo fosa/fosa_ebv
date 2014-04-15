@@ -1,0 +1,10 @@
+*.aux
+*.log
+*.toc
+*.out
+*.tmp
+*.bak
+*.gz
+*.swp
+*.gnuplot
+fosaphy_main-gnuplottex*
