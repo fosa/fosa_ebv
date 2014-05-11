@@ -16,3 +16,133 @@
 %----------------------------------------
 
 \chapter{Punktoperationen und Bildverknüpfungen}
+
+\section{Transformationstabellen (LUT)}
+
+Jedem Grauwert $g \in G$ wird einen Grauwert $g' \in G'$ über eine Abbildung $f$ zugeordnet:
+\[
+	f:G \rightarrow G' \qquad ,f(g) = g'
+\]\\\\
+Lösung in MATLAB:
+\lstset{language=Matlab}
+\lstinputlisting[firstline=3,caption=]{./Matlab/lut.m}
+
+
+\section{Lineare und nichtlineare Grauwerttransformationen}
+Eine allgemeine lineare Grauwerttransformation lässt sich in folgender Notation schreiben:
+\[
+	f:[0,255] \rightarrow[0,255] \in \mathbb{R}
+\]
+\[
+	f(g) := \left\lbrace \begin{matrix}
+		0 \qquad \text{,falls } (g+c_1) \cdot c_2 < 0\\
+		255 \qquad \text{,falls } (g+c_1) \cdot c_2 >255\\
+		(g+c_1) \cdot c_2 \qquad \text{,sonst} (c_1, c_2 \in \mathbb{R})
+	\end{matrix} \right.
+\]
+
+\subsection{Spreizung}
+Sind die Grauwerte eines Bildes auf das Intervall $[g_1,g_2]$ beschränkt, so kann durch Anwendung der linearen Grauwerttransformation als Spreizung die werte auf das gesamte Intervall $[0,255]$ verteilt werden:
+\[
+	f:[0,255] \rightarrow[0,255] \in \mathbb{R}
+\]
+\[
+	f(g) := \left\lbrace \begin{matrix}
+		0 \qquad \text{,falls } g < g_1\\
+		255 \cdot \frac{g - g_1}{g_2 - g_1} \qquad \text{,falls } g \in [g_1,g_2]\\
+		255 \qquad \text{,falls } g > g_2
+	\end{matrix}.\right.
+\]\\\\
+Lösung in MATLAB:
+\lstset{language=Matlab}
+\lstinputlisting[firstline=3,caption=]{./Matlab/spreizung.m}
+~\\
+
+\subsection{Gammakorrektur}
+Ein wichtiges Beispiel der nichtlinearen Grauwerttransfomration ist die Gammakorrektur. Der Ursprung dieser nitlinearen Korrektur der Grauwert liegt in der Nichtlinearität von Aufnahme- und Darstellungssystemen.:
+\[
+	f:[0,255] \rightarrow[0,255] \in \mathbb{R}
+\]
+\[
+	f(g) := 255 \cdot \left(\frac{g}{255}\right)^\gamma
+\]\\\\
+Lösung in MATLAB:
+\lstset{language=Matlab}
+\lstinputlisting[firstline=3,caption=]{./Matlab/gamma.m}
+~\\
+
+\section{Histogrammausgleich}
+Die Idee des Histogrammausgleichs ist, die Grauwerte so zu verteilen, dass jeder gleich häufig vorkommt. Dies kann allerdings nicht ganz erreicht werden, da die Grauwerte diskret sind. Näherungsweise kann die kumulierte Häufigkeit $h_I(g)$ herangezogen werden. Bei einer konstanten absoluten Häufigkeit, würde die kumulierte Häufigketi linear anwachsen.\\
+Die entsprechende Transformation:
+\[
+	f:[0,255] \rightarrow[0,255] \in \mathbb{R}
+\]
+\[
+	f(g) := g_{max} \cdot \sum_{g'=0}^{g}p_I(g')
+\]\\\\
+Lösung in MATLAB:
+\lstset{language=Matlab}
+\lstinputlisting[firstline=4,caption=]{./Matlab/histogramm_ausgleich.m}
+~\\
+
+\section{Arithemtische und logische Bildverknüpfungen}
+Während die Punktoperationen auf Einzelbildern vor allem der besseren optischen Darstellung von 
+Bildern dienen, eröffnen Punktoperationen auf mehreren Bildern ein grosses Repertoire an Methoden, 
+die schon erste einfache Computer Vision Anwendungen erlauben.
+
+\subsection{Differenzbildung zur Motiondetektion}
+Eine Methode zur Change Detektion basiert auf der Berechnung von Differenzbildern. Dabei wird vorausgegangen, dass eine Serie von Bildern als Funktion der Zeitstempel aufgnommen werden:
+\[
+	I(t) = I(t_k) = I(k\cdot \Delta t) = I_k
+\]\\
+Differenzbild Berechnung:
+\[
+	\Delta I_{k+n}=\frac{1}{2} \cdot (255 + I_{k+n}-I_k) = \frac{1}{2} \cdot (255 + I((k+n)\cdot \Delta t)-I(k\cdot \Delta t)
+\]\\
+Auf das Differenzbild kann noch eine Schwellwertioperation agewandt werden:
+\[
+	f:[0,255] \rightarrow \lbrace 0,255 \rbrace
+\]
+\[
+	f(g) := \left\lbrace 
+	\begin{matrix}
+		0 & \text{, falls } g < g_1 \vee g > g_2\\
+		255 & \text{, falls } g \in [g_1,g_2]
+	\end{matrix}
+	\right.
+\]\\
+\[
+	\begin{matrix}
+		\text{mit} & g_1 = 128 - threshold,\\
+				   & g_2 = 128 + threshold
+	\end{matrix}
+\]\\\\
+Lösung in MATLAB:
+\lstset{language=Matlab}
+\lstinputlisting[firstline=1,caption=]{./Matlab/MotionDetektionFunct.m}
+~\\
+
+\subsection{Hintergrundschätzung durch gleitenden Mittelwert}
+Ziel ist es, eine möglichst exakte Hypothese des unbeweglichen Hintergrundes $B(t_k) = B(k \cdot \Delta t) = B_k$ der Bilder $I_k$ zu ermitteln. Angenommen, dass der Hintergrund jedes Pixels mehrheitlich sichtbar ist, kann durch ein einfaches gleitendes Mittel eine brauchbare Hypothese $B_k$ bestimmt werden:
+\[
+	B_k = \alpha \cdot B_{k-1} + (1- \alpha)  \cdot I_k \qquad , a \in ]0,1[ 
+\]\\
+Eine plötzlich auftretende stationäre Änderung in der Bildfolge $I_k$ ist nach $n \cdot \Delta t$ Zeitshcritten zu folgendem Anteil $p$ in die Hintergrundhypothese $B_k$ integriert:
+\[
+	p = 1 - \alpha^n
+\]\\\\
+Lösung in MATLAB:
+\lstset{language=Matlab}
+\lstinputlisting[firstline=1,caption=]{./Matlab/GleitendesMittelFunct.m}
+~\\
+
+\subsection{Hintergrundschätzung durch statistische Analyse}
+Die grundlegende Idee ist, für jedes Pixel individuell die Helligkeitsschwankungen zu messen und durch ein einfaches statistisches Modell zu approximieren. Letzteres besteht in einer Gauss‘schen Approximation der Grauwertfluktuationen des Pixels durch das Paar aus Mittelwert und 
+Varianz ($\mu, \sigma$). Hierbei wird für jedes Pixel individuell die Schätzung von Mittelwert und Varianz über die Zeitschritte $k\cdot \Delta t$ folgendermassen durchgeführt:
+\[
+	\begin{aligned}
+		\mu_k &= \alpha \cdot \mu_{k-1} + (1 - \alpha) \cdot I_k \\
+		\sigma_k &= \alpha \cdot \sigma_{k-1} + (1 - \alpha) \cdot (\mu_k - I_k)^T \cdot (\mu_k - I_k) \qquad, \alpha \in ]0,1[
+	\end{aligned}
+\]\\
+Das Aufdatieren erfolgt nur, wenn sich der Mittelwert $\mu_k$ und aktueller Pixelwert $I_k$ nur um weniger als $thr \cdot \sigma_k$ unterscheiden.
