@@ -1,0 +1,165 @@
+% coding:utf-8
+
+%----------------------------------------
+%FOSAEBV, a LaTeX-Code for a summary of realtime image processing
+%Copyright (C) 2013, Mario Felder
+
+%This program is free software; you can redistribute it and/or
+%modify it under the terms of the GNU General Public License
+%as published by the Free Software Foundation; either version 2
+%of the License, or (at your option) any later version.
+
+%This program is distributed in the hope that it will be useful,
+%but WITHOUT ANY WARRANTY; without even the implied warranty of
+%MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+%GNU General Public License for more details.
+%----------------------------------------
+
+\section{Lineare Filter - Faltung}
+Mathematische Beschreibung der Faltung $I \otimes h$ eines Bildes $I_{m,n}$ mit einer Maske $h_{p,q}$:
+\[
+	I \otimes h:I_{m,n} \rightarrow \sum_{p=-u}^{u}\sum_{q=-v}^{v} I_{m-p,n-q} \cdot h_{p,q}
+\]
+\paragraph{Rechengesetzte:}
+\begin{itemize}
+	\item[]Kommutativität: $I \otimes J = J \otimes I$
+	\item[]Assoziativität: $(I \otimes J) \otimes K = I \otimes (J \otimes K)$
+	\item[]Distributivität: $I \otimes (J + K) = I \otimes J + I \otimes K$
+	\item[]skalare Assoziativität: $a \cdot (I \otimes J) = (a \cdot I) \otimes J = I \otimes (a \cdot J)$
+\end{itemize}
+~\\
+Durch Anwendung der Rechenregeln kann eine Maske effizient angewendet werden,
+indem sie aus zwei eindimensionalen Masken zusammengesetzt wird:
+\[
+	I \otimes h = (I \otimes h_x) \otimes h_y
+\]
+
+\subsection{Glätten von Bildern (Tiefpass)}
+Bei der Glättung wird ein Pixel durch die Mittelung des Pixels mit den Nachbarpixeln ersetzt.
+Dies dient zur Rauschunterdrückung oder als Vorstufe zum Dezimieruren der räumlichen Auflösung (eng. down sampling).\\
+Verwendete Standardfilter sind Rechteck- oder Gaussmasken:
+\[
+	R=\frac{1}{9} \left[\begin{matrix}
+					1 & 1 & 1\\
+					1 & 1 & 1\\
+					1 & 1 & 1\\	\end{matrix}\right] \qquad
+	G=\frac{1}{16} \left[\begin{matrix}
+					1 & 2 & 1\\
+					2 & 4 & 2\\
+					1 & 2 & 1\\	\end{matrix}\right]
+\]
+~\\
+Damit der Wertebereich der Abbildung $G' =[0\ 255]$ bleibt, muss die Summe über alle Maskenkoeffizienten $1$ ergeben.\\
+\\\\
+Lösung in MATLAB:
+\lstset{language=Matlab}
+\lstinputlisting[firstline=1,caption=]{./Matlab/Glaettung.m}
+~\\
+
+\subsection{Kantenhervorhebung (Hochpass)}
+Harte Grauwertübergänge eines Bildes werden verstärkt, während weiche Übergänge abgeschwächt werden. Hierbei ist der Gradienten Filter eine wichtige Filterklasse.
+Diese berechnet den Gradienten, d.h. die Ableitung der Grauwerte $I_{m,n}$ eines Bildes.
+\[\begin{aligned}
+	\pdifrac{I(x,y)}{x} &= \lim\limits_{\Delta x \rightarrow 0} \frac{I(x + \Delta x,y) - I(x-\Delta x,y)}{2 \cdot \Delta x} = \frac{I_{m,n+1} - I_{m,n-1}}{2}\\
+	\pdifrac{I(x,y)}{y} &= \lim\limits_{\Delta y \rightarrow 0} \frac{I(x,y + \Delta y) - I(x,y-\Delta y)}{2 \cdot \Delta y} = \frac{I_{m+1,n} - I_{m-1,n}}{2}
+\end{aligned}\]
+~\\\\
+Mit folgenden Filtern kann diese Berechnung des Gradienten durchgeführt werden:
+\[
+	h_x = \frac{1}{2} \cdot \left[\begin{matrix}
+		-1 & 0 & 1
+		\end{matrix}\right] \qquad
+	h_y = \frac{1}{2} \cdot \left[\begin{matrix}
+		-1 \\ 0 \\ 1
+		\end{matrix}\right] \qquad
+\]
+~\\\\
+Da diese fehleranfällig auf Rausche sind, wird jeweils mit einem Glättungsfilter kombiniert.\\
+\\
+Prewitt-Filter:
+\begin{scriptsize}\[
+	h_x = \left[\begin{matrix} 1 \\ 1 \\ 1\end{matrix}\right] 
+	\otimes \left[\begin{matrix} -1 & 0 & 1	\end{matrix}\right] =
+	\left[\begin{matrix}
+			-1 & 0 & 1\\
+			-1 & 0 & 1\\
+			-1 & 0 & 1\\
+	\end{matrix}\right]	\qquad
+	h_y = \left[\begin{matrix} -1 \\ 0 \\ 1\end{matrix}\right] 
+	\otimes \left[\begin{matrix} 1 & 1 & 1	\end{matrix}\right] =
+	\left[\begin{matrix}
+			-1 & -1 & -1\\
+			0 & 0 & 0\\
+			1 & 1 & 1\\
+	\end{matrix}\right]
+\]\end{scriptsize}
+~\\
+Sobel-Filter:
+\begin{scriptsize}\[
+	h_x = \left[\begin{matrix} 1 \\ 2 \\ 1\end{matrix}\right] 
+	\otimes \left[\begin{matrix} -1 & 0 & 1	\end{matrix}\right] =
+	\left[\begin{matrix}
+			-1 & 0 & 1\\
+			-2 & 0 & 2\\
+			-1 & 0 & 1\\
+	\end{matrix}\right]	\qquad
+	h_y = \left[\begin{matrix} -1 \\ 0 \\ 1\end{matrix}\right] 
+	\otimes \left[\begin{matrix} 1 & 2 & 1	\end{matrix}\right] =
+	\left[\begin{matrix}
+			-1 & -2 & -1\\
+			0 & 0 & 0\\
+			1 & 2 & 1\\
+	\end{matrix}\right]
+\]\end{scriptsize}
+\\\\
+Lösung in MATLAB:
+\lstset{language=Matlab}
+\lstinputlisting[firstline=1,caption=]{./Matlab/gradient1.m}
+~\\
+Der Gradient kann auch als Vektor dargestellt werden mit dem Betrag $\difrac{I}{r}$ und Winkel $\alpha$:
+\[
+	\difrac{I}{r} = \sqrt{\left(\pdifrac{I}{x}\right)^2 + \left(\pdifrac{I}{y}\right)^2} \qquad
+	\alpha = \arctan \frac{\pdifrac{I}{y}}{\pdifrac{I}{x}}
+\]
+\\\\
+Lösung in MATLAB:
+\lstset{language=Matlab}
+\lstinputlisting[firstline=1,caption=]{./Matlab/gradient2.m}
+~\\
+
+\subsection{Bildschärfung}
+Für die Bildschärfung wird der Laplace Operator verwendet, welcher ein linearer richtungsunabhängiger Operator ist.
+Er ist definiert als die Summe der zweiten Ableitung:
+\[
+	\Delta I = L = \pdifrac{^2 I}{x^2} + \pdifrac{^2 I}{y^2}
+\]
+~\\
+Die Approximation für diskrete Werte $I_{m,n}$ des Bildes (nur für $x$, $y$ analog dazu):
+\[\begin{aligned}
+	I_{xx} &\approx \frac{I_x(x+1,y)-I_x(x,y}{1} \\
+	&\approx \frac{I(x+1,y)-I(x,y}{1} - \frac{I(x,y)-I(x-1,y}{1}\\
+	\pdifrac{^2 I}{x^2} &\approx I_{x+1} - 2 \cdot I_x + I_{x-1}
+\end{aligned}\]
+~\\
+Die dazugehörige Maske:
+\[
+	L = \left[ \begin{matrix}
+	0 & -1 & 0\\
+	-1 & 4 & -1\\
+	0 & -1 & 0
+	\end{matrix} \right]
+\]
+~\\
+Für die Bildschärfung wird der Laplace Operator in Kombination mit dem Identischen Operator $I$ verwendet:
+\[
+	I + \beta \cdot L
+\]
+~\\
+\begin{footnotesize}
+$\beta$: Grad der Bildschärfung
+\end{footnotesize}
+\\\\
+Lösung in MATLAB:
+\lstset{language=Matlab}
+\lstinputlisting[firstline=1,caption=]{./Matlab/bildschaerfung.m}
+~\\

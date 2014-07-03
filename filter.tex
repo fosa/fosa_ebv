@@ -16,3 +16,21 @@
 %----------------------------------------
 
 \chapter{Filteroperatoren im Ortsraum}
+Bei diesen Filteroperationen werden für die Transformation enes Pixels auch die Werte der Nachbarpixel in Betracht gezogen.
+\[\begin{aligned}
+	f:G \rightarrow G'\\
+	f(g) = f_{I_{p,q}} (I_{m,n}) = g' \qquad , (p,q) \neq (m,n)
+\end{aligned}\]
+~\\\\
+Klassifikationen der Filteroperatoren:\\
+\paragraph{homogene Filter:\\}
+Die Berechnung der Transformation $f(g)$ wird für jedes Pixel unabhängig von dessen Position im Bild vorgenommen.\\
+\paragraph{inhomogene Filter:\\}
+Die Berechnung der Transformation $f(g)$ hängt explizit von der Position des Pixels im Bild ab.\\
+\\
+\paragraph{lineare Filter:\\}
+Die Berechnung der Transfomration $f(g)$ hängt für jedes Pixel linear ovn $g=I_{m,n}$ und den Werten der Nachbarpixel $I_{p,q}$ ab.\\
+\paragraph{nicht lineare Filter:\\}
+Für die Berechnung der Transformation $f(g)$ eines Pixels werden die Werte von $g=I_{m,n}$ und der Nachbarpixel $I_{p,q}$ in nicht linearer Weise verknüpft.
+
+\input{linear}
