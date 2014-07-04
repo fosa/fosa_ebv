@@ -16,3 +16,63 @@
 %----------------------------------------
 
 \chapter{Linien-Segmentierung und Merkmalsextraktion}
+
+\section{Kantendetektion}
+Die Bestimmung der Kanten durch Anwendung des Gradienten Filters und einem Schwellwert erzeilt kein zufriedenstellendes Kantenbild. 
+Es treten mehrere Probleme dabei auf:
+\begin{itemize}
+	\item Die Kanten sind deutlich breiter als ein Pixel, was eine nicht präzise räumliche Lokalisierung der Kanten bedeutet und zusätzlich eine unnötige Redundanz darstellt.
+	\item Die Wahl eines globalen Schwellwertes ergibt nicht in allen Bildbereichen zufriedenstellende Resultate: Entweder treten Kanten zu häufig auf, oder Kanten werden nicht detektiert. Auch ist die Schwellwertwahl manuell.
+	\item Zusammengehörige Kanten sind, vor allem bei hohem Schwellwert, unterbrochen.
+\end{itemize}
+~\\
+Der Canny Algorithmus zur Kantendetektion löst diese Probleme.
+Er geht dabei folgendermassen vor:\\
+\paragraph{1. Glättung\\}
+Das Bild wird mittels Gauss Filter geglättet (mit parametrierbarer Breit $\sigma$)
+\[
+	G_{pq}(\sigma) = \frac{1}{2\pi\cdot\sigma^2} \cdot \e^{- \frac{p^2 + q^2}{2 \cdot \sigma^2}}
+\]
+\paragraph{2. Kantenfilter\\}
+Anwendung eines Standard Knatenfilters (Sobel, Prewitt) zur Bestimmung des Betrages und der Richtung des Gradienten in jedem Bildpunkt.
+\paragraph{3. Bestimmung der lokalen Maxima\\}
+Basierend auf der Richtung des Gradienten wird für jeden Bildpunkt ermittelt, ob es sich um ein lokales Maximum handelt.
+Hierzu wird die Änderung der Grauwerte entlang der Richtung des Gradienten betrachtet und das Pixel nur dann selektiert, 
+wenn es einen Gradienten Betrag grösser als die Nachbarpixel hat.
+\paragraph{4. Kantenextraktion\\}
+In einem letzten Schritt werden nun die eigentlichen Kanten selektiert.
+Hierzu ist ein (manueller) Schwellwert („oberer Schwellwert“) für den Gradienten Betrag zu setzen, oberhalb dessen ein Pixel als Kante betrachtet wird. 
+Wird ein Pixel gefunden, das dem oberen Schwellwertkriterium genügt, werden alle Pixel entlang einer Linie, die dem lokalen Maximum folgt und die einem schwächeren Schwellwertkriterium („unterer Schwellwert“) genügen, zur Kante hinzugefügt. 
+Durch diese Hysterese kann der Canny Algorithmus sehr dynamisch auf Kontrastschwankungen im Bild reagieren.
+~\\\\
+Lösung in MATLAB:
+\lstset{language=Matlab}
+\lstinputlisting[firstline=1,caption=]{./Matlab/canny.m}
+~\\
+\section{Linienextraktion (Hough-Transformation)}
+Die grundsätzliche Idee der Hough Transformation besteht in der Verwendung der Gradienten Information (Betrag und Richtung), um alle Kantenpunkte vom $x$-$y$-Raum in einen neuen Parameterraum zu transformieren, in dem Punkte, die auf einer gemeinsamen Geraden liegen, zum gleichen Parametersatz gehören.\\
+Parametrierung einer Geraden (Hessesche Normalform):
+\[
+	\rho = x \cdot \cos \alpha + y \cdot \sin \alpha
+\]
+~\\
+Die Hough Transformation nutzt die Tatsache aus, dass alle Punkte auf einer gemeinsamen Gerade die gleiche Parameterwerte von $\alpha$ und $\rho$ besitzten.
+~\\\\
+Lösung in MATLAB:
+\lstset{language=Matlab}
+\lstinputlisting[firstline=1,caption=]{./Matlab/hough.m}
+~\\
+
+\section{Detektion von Kreisen mittels Hough Transformation}
+Ausgehend von einem Punkt ($x,y$) auf dem Rand des Kreises kann der Mittelpunkt des  Kreises erreicht werden, indem man sich um die Länge $R$ (Radius des Kreises) in die negative Richtung des Gradienten Vektors bewegt.
+\[
+	x_c = x - R \cdot \pdifrac{I}{x}\cdot \left[\difrac{I}{r} \right]^{-1} \qquad
+	y_c = y - R \cdot \pdifrac{I}{y}\cdot \left[\difrac{I}{r} \right]^{-1}
+\]
+~\\
+Den Punkt ($x_c,y_c$) für alle Werte des Kreises akkumuliert, sollte ein Peak im Mittelpunkt des Kreises resultieren.
+~\\\\
+Lösung in MATLAB:
+\lstset{language=Matlab}
+\lstinputlisting[firstline=1,caption=]{./Matlab/houghKreis.m}
+~\\

@@ -16,3 +16,95 @@
 %----------------------------------------
 
 \chapter{Fourier-Transformation}
+
+\section{1D Fourier-Transformation}
+Die Fourier Transformationen dient dazu, für eine Funktion $h(x)$ im Ortsraum das zugehörige Frequenzspektrum im Ortsfrequenzraum $\hat{h}(f)$  zu bestimmen.
+Dabei gibt es grundsätzlich vier mögliche Anwendungsfälle und zugehörige Formulierungen der Fourier Transformation (FT):
+
+\paragraph{Kontinuierliche FT einer aperiodischen Funktion $h(x)$:}
+\[
+	\hat{h}(f) = \int_{-\infty}^{\infty} h(x) \cdot \e^{-\im \cdot 2\pi \cdot f \cdot x}\di x \qquad
+	h(f) = \int_{-\infty}^{\infty} \hat{h}(x) \cdot \e^{\im \cdot 2\pi \cdot f \cdot x}\di f
+\]
+
+\paragraph{Kontinuierliche FT einer $X_0$-periodischen Funktion $h(x)$:}
+\[
+	\hat{h}[n] = \frac{1}{X_0}\int_{0}^{X_0} h(x) \cdot \e^{-\im \cdot 2\pi \cdot f_0 \cdot x}\di x \qquad
+	h(f) = \sum_{n=-\infty}^{\infty} \hat{h}[n] \cdot \e^{\im \cdot 2\pi \cdot n \cdot f_0 \cdot x}
+\]
+\begin{footnotesize}
+	$f_0 = \frac{1}{X_0}$\\
+\end{footnotesize}
+~\\
+Im Falle einer periodischen Funktion besteht das Frequenzspektrum nur aus diskreten Werten an den Frequenzen $f_n = n \cdot f_0$.
+
+\paragraph{Diskrete FT einer aperiodischen Funktion für äquidistante Abtastpunkte $h_n = h(n\cdot x_s)$:}
+\[
+	\hat{h}(f) = \sum_{n = -\infty}^{\infty} h[n] \cdot \e^{-\im \cdot 2\pi \cdot f \cdot n \cdot x_s} \qquad
+	h[n] = \frac{1}{f_s}\int_{0}^{f_s} \hat{h}(f) \cdot \e^{\im \cdot 2\pi \cdot n \cdot x_s \cdot f}\di f
+\]
+\begin{footnotesize}
+	$f_s = \frac{1}{x_s}$\\
+\end{footnotesize}
+~\\
+Bei Abtastung eines Signals mit dem Intervall $x_s$ entsteht ein periodisches Frequenzspektrum der Periode $f_s$.
+
+\paragraph{Diskrete FT einer $X_0$-periodischer Funktion für äquidistante Abtastpunkte $h_n = h(n\cdot x_s)$:}
+\[
+	\hat{h}[k] = \sum_{n=0}^{N-1} h[n] \cdot \e^{-\im \cdot 2\pi \cdot \frac{k \cdot n}{N}} \qquad
+	h[n] = \frac{1}{N} \sum_{k=0}^{N-1} \hat{h}[k] \cdot \e^{\im \cdot 2\pi \cdot \frac{k \cdot n}{N}}
+\]
+\begin{footnotesize}
+	$x_s =\frac{X_0}{N}$\\
+\end{footnotesize}
+~\\
+Wird ein periodisches Signal mit $n \cdot x_0$ Intervallpunkten abgetastet, so hat die FT ein ebenfalls diskretes und periodisches Frequenzspektrum der Periode $f_s = \frac{1}{x_s} = \frac{N}{X_0}$.
+\\
+
+\paragraph{Rechenregeln\\}
+\begin{tabular}{ll}
+	Linearität: & $\mathcal{F}\{\lambda \cdot h(x)\} = \lambda \cdot \mathcal{F}\{h(x)\}$ \\
+	 & $\mathcal{F}\{h(x) + g(x)\} = \mathcal{F}\{h(x)\} + \mathcal{F}\{g(x)\}$\\
+	Verschiebung: & $\mathcal{F}\{h(x+x_0)\} = \e^{\im \cdot 2\pi \cdot f \cdot x_0} \cdot \mathcal{F}\{h(x)\}$\\
+	Faltungssatz: & $\mathcal{F}\{h(x) \otimes g(x)\} = \mathcal{F}\{h(x)\} \cdot \mathcal{F}\{g(x)\}$\\
+\end{tabular}
+
+\section{Diskrete 2D Fourier-Transformation}
+Bei Annahme dass die Funktion in $x$-Richtung $X_0$-periodisch und in $y$-Richtung $Y_0$-periodisch ist ($X_0 = N \cdot x_s$, $Y_0 = M \cdot y_s$), so ist die 2D DFT folgendermassen definiert:
+\[\begin{aligned}
+	\hat{h}[l,k] &= \sum_{m=0}^{M-1} \sum_{n=0}^{N-1} h[m,n] \cdot \e^{-\im \cdot 2\pi \cdot \left[\frac{l \cdot m}{M} + \frac{k \cdot n}{N}\right]}
+	\\
+	h[m,n] &= \frac{1}{M \cdot N} \sum_{l=0}^{M-1} \sum_{k=0}^{N-1} \hat{h}[l,k] \cdot \e^{\im \cdot 2\pi \cdot \left[\frac{l \cdot m}{M} + \frac{k \cdot n}{N}\right]}
+\end{aligned}\]
+~\\\\
+Lösung in MATLAB:
+\lstset{language=Matlab}
+\lstinputlisting[firstline=1,caption=]{./Matlab/dft.m}
+~\\
+
+\section{Periodische Strukturen}
+Periodische Strukturen führen auch zu einem periodischen Frequenzspektrum.
+Wenn das Bild jedoch nicht über den Bildrand hinaus periodisch ist, treten Fehler in der DFT auf.
+Dies kann korrigiert werden, indem eine Fensterfunktion angewendet wird, welche zum Rand des Bildes stetig nach Null abfällt.
+~\\\\
+Lösung in MATLAB:
+\lstset{language=Matlab}
+\lstinputlisting[firstline=1,caption=]{./Matlab/hann.m}
+~\\
+
+\section{Unterdrückung periodischer Störungen}
+Periodische Störungen haben auch eine periodische Auswirkung im Frequenzspektrum.
+Durch einen Nochtfilter können diese selektiv ausgeblendet werden. So kann ein Grossteil des Rauschens eliminiert werden.
+~\\\\
+Lösung in MATLAB:
+\lstset{language=Matlab}
+\lstinputlisting[firstline=1,caption=]{./Matlab/notch.m}
+~\\
+
+\section{Deconvolution}
+Ein Bild, welches durch einen Filter unscharf gezeichnet wurde, kann durch Deconvolution wieder hergestellt werden. Dabei wird der Faltungssatz angewendet.
+~\\\\
+Lösung in MATLAB:
+\lstset{language=Matlab}
+\lstinputlisting[firstline=1,caption=]{./Matlab/deconvolution.m}
+~\\
