@@ -15,13 +15,27 @@
 %GNU General Public License for more details.
 %----------------------------------------
 
-	\setcounter{page}{1}
-    \pagenumbering{arabic}
-\input{einführung}   
-\input{poper}		
-\input{filter}		
-\input{fourier}		
-\input{segment}		
-\input{line_seg}
-%\input{farbe}
-%\input{anwendung}
+\documentclass[a5paper,10pt,fleqn]{book}
+
+\usepackage{fosaebv_layout}
+
+\title{Formelsammlung Echtzeit Bildverarbeitung}
+
+\author{Mario Felder}
+\date{\today}
+
+%\catcode `\*=\active
+%\def *{\cdot}
+
+\begin{document}
+
+\maketitle
+\thispagestyle{empty}
+\cleardoublepage
+\pagenumbering{Roman}
+\tableofcontents
+
+\include{content}
+
+\end{document}
+

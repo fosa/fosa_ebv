@@ -27,14 +27,14 @@ Bekannte Verfahren sind:
 ~\\\\
 Lösung in MATLAB:
 \lstset{language=Matlab}
-\lstinputlisting[firstline=1,caption=]{./Matlab/MedianFilter.m}
+\lstinputlisting[firstline=1,caption=]{../Matlab/MedianFilter.m}
 ~\\
 
 \subsection{morphologische Operatoren}
 Bei morphologischen Operationen wird die Umgebung eines Pixels auf eine bestimmte Struktur hin untersucht.
 Dazu wird ein Strukturelement verwendet, welches einen definierten Referenzpunkt hat.
 \begin{center}
-	\includegraphics[scale=0.5]{./images/structelem.png}
+	\includegraphics[scale=0.5]{../fig/structelem.png}
 \end{center}
 Morphologische Operatoren dienen dazu die Form von Objekten in definierte Weise zu verändern. 
 Dies sind typisch:
@@ -50,7 +50,7 @@ Dies sind typisch:
 Bei der Dilatation wird das Strukturelement über das Bild geschoben.
 Dabei werden alle Referenzpunkte des Strukturelementes markiert, bei denen eine nicht verschwindende Schnittmenge mit dem Objekt auftritt.
 \begin{center}
-	\includegraphics[scale=0.5]{./images/dilatation.png}
+	\includegraphics[scale=0.5]{../fig/dilatation.png}
 \end{center}
 Mathematische Beschreibung:
 \[
@@ -61,7 +61,7 @@ Mathematische Beschreibung:
 Bei der Dilatation wird das Strukturelement über das Bild geschoben.
 Dabei werden alle Referenzpunkte des Strukturelementes markiert, bei denen das Strukturelement ganz in dem Objekt enthalten ist.
 \begin{center}
-	\includegraphics[scale=0.5]{./images/erosion.png}
+	\includegraphics[scale=0.5]{../fig/erosion.png}
 \end{center}
 Mathematische Beschreibung:
 \[
@@ -87,13 +87,13 @@ Schliessung:
 ~\\\\
 Lösung in MATLAB:
 \lstset{language=Matlab}
-\lstinputlisting[firstline=1,caption=]{./Matlab/morphologie.m}
+\lstinputlisting[firstline=1,caption=]{../Matlab/morphologie.m}
 ~\\
 
 \subsubsection{Hit- und Miss-Operation}
 Bei dieser Operation wird nicht nur geschaut, ob das Strukturelement in einem Objekt enthalten ist, sondern ob die Nachbarschaft eine vorgegebene Struktur hat.
 \begin{center}
-	\includegraphics[scale=0.5]{./images/hitmiss.png}
+	\includegraphics[scale=0.5]{../fig/hitmiss.png}
 \end{center}
 \begin{footnotesize}
 	$0$: Das Pixel muss den Wert 0 haben\\
