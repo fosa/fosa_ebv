@@ -7,7 +7,7 @@
 *.out
 *.toc
 
-tex/fosaebv_main.pdf
+fosaebv_main.pdf
 
 ## Intermediate documents:
 *.dvi
